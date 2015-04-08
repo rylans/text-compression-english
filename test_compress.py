@@ -7,13 +7,14 @@ import unittest
 from compress import Compress
 
 class TestCompress(unittest.TestCase):
+    def setUp(self):
+        self.c = Compress()
+
     def test_encode_returns_bytes(self):
-        c = Compress()
-        enc =  c.encode('foo')
+        enc = self.c.encode('foo')
         self.assertTrue(isinstance(enc, bytes))
 
     def test_decode_returns_string(self):
-        c = Compress()
-        dec = c.decode(b'123')
+        dec = self.c.decode(b'123')
         self.assertTrue(isinstance(dec, str))
 
