@@ -27,25 +27,35 @@ class Compress:
     """Compress"""
     def __init__(self):
         self.word_list = []
-        self.huffman_tree = None
+        #self.word_tree= None
+        #self.char_tree = None
 
-        self.codeWordlist()
-        self.build_huffman_tree()
+        self.bits_to_symbol = {}
+        self.symbol_to_bits = {}
+
+        words = self.codeWordlist()
+        nodes = self.make_word_nodes(words)
+        tree = self.build_huffman_tree(nodes)
+        self.build_symbol_map('1', tree)
 
     def codeWordlist(self):
         wordfile = open('words256.txt', 'r')
         for line in wordfile.readlines():
             self.word_list.append(line.strip())
         wordfile.close()
+        return self.word_list
 
-    def build_huffman_tree(self):
+    def make_word_nodes(self, words):
         fake_freq = 0.5
         nodes = []
-        for word in self.word_list:
+        for word in words:
             node = HuffmanNode(word, fake_freq)
             fake_freq *= fake_freq
             nodes.append(node)
+        return nodes
 
+
+    def build_huffman_tree(self, nodes):
         priorityq = queue.PriorityQueue()
         for node in nodes:
             priorityq.put((node.freq, node))
@@ -58,7 +68,24 @@ class Compress:
             n2.set_parent(parent)
             priorityq.put((parent.freq, parent))
 
-        self.huffman_tree = priorityq.get()[1]
+        return priorityq.get()[1]
+
+    def build_symbol_map(self, bit, root):
+        self.build_symbol_map_recur(bit, root)
+
+    def build_symbol_map_recur(self, bits, node):
+        if node.is_leaf():
+            self.bits_to_symbol[bits] = node.symbol
+            self.symbol_to_bits[node.symbol] = bits
+        else:
+            lchild = node.children[0]
+            rchild = node.children[1]
+            self.build_symbol_map_recur(bits + '0', lchild)
+            self.build_symbol_map_recur(bits + '1', rchild)
+
+    def encode_symbol(self, string):
+        """Encodes this string if it is in the tree"""
+        return self.symbol_to_bits[string]
 
     def encode(self, string):
         """Encodes string to byte representation"""
@@ -70,3 +97,4 @@ class Compress:
 
 if __name__ == '__main__':
     c = Compress()
+    print c.symbol_to_bits
