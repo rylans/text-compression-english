@@ -21,15 +21,29 @@ class TestCompress(unittest.TestCase):
     def test_encode_word_the(self):
         enc = self.c.encode_symbol('the')
         binary = int(enc, 2)
-        self.assertEquals(binary, 3)
+        self.assertEquals(binary, 19)
 
     def test_encode_word_from(self):
         enc = self.c.encode_symbol('from')
         binary = int(enc, 2)
-        self.assertEquals(binary, 524319)
+        self.assertEquals(binary, 109)
 
     def test_encode_word_home(self):
         enc = self.c.encode_symbol('home')
         binary = int(enc, 2)
-        self.assertEquals(binary, 524331)
+        self.assertEquals(binary, 233)
 
+    def test_encode_char_space(self):
+        enc = self.c.encode_symbol(' ')
+        binary = int(enc, 2)
+        self.assertEquals(binary, 7)
+
+    def test_encode_char_e(self):
+        enc = self.c.encode_symbol('e')
+        binary = int(enc, 2)
+        self.assertEquals(binary, 2)
+
+    def test_encode_char_w(self):
+        enc = self.c.encode_symbol('w')
+        binary = int(enc, 2)
+        self.assertEquals(binary, 48)

@@ -23,37 +23,64 @@ class HuffmanNode:
     def is_leaf(self):
         return len(self.children) == 0
 
+    def __repr__(self):
+        return "("+self.symbol+", "+str(self.freq)+")"
+
 class Compress:
     """Compress"""
     def __init__(self):
-        self.word_list = []
         #self.word_tree= None
         #self.char_tree = None
 
         self.bits_to_symbol = {}
         self.symbol_to_bits = {}
 
-        words = self.codeWordlist()
+        words = self.read_word_list()
         nodes = self.make_word_nodes(words)
         tree = self.build_huffman_tree(nodes)
         self.build_symbol_map('1', tree)
 
-    def codeWordlist(self):
+        nodes2 = self.make_char_nodes()
+        tree2 = self.build_huffman_tree(nodes2)
+        self.build_symbol_map('0', tree2)
+
+    def make_char_nodes(self):
+        chars = [(' ', 18.28), ('e', 10.26),
+                ('t', 7.5), ('a', 6.5),
+                ('o', 6.16), ('n', 5.7),
+                ('i', 5.6), ('s', 5.3),
+                ('r', 4.9), ('h', 4.8),
+                ('l', 3.3), ('d', 3.28),
+                ('u', 2.27), ('c', 2.23),
+                ('m', 2.0), ('f', 1.9),
+                ('w', 1.7), ('g', 1.6),
+                ('p', 1.5), ('y', 1.4),
+                ('b', 1.25), ('v', 0.79),
+                ('k', 0.56), ('x', 0.14),
+                ('j', 0.09), ('q', 0.08),
+                ('z', 0.05)]
+        nodes = []
+        for char in chars:
+            node = HuffmanNode(char[0], char[1])
+            nodes.append(node)
+        return nodes
+
+    def read_word_list(self):
         wordfile = open('words256.txt', 'r')
+        word_list = []
         for line in wordfile.readlines():
-            self.word_list.append(line.strip())
+            word_list.append(line.strip())
         wordfile.close()
-        return self.word_list
+        return word_list
 
     def make_word_nodes(self, words):
         fake_freq = 0.5
         nodes = []
         for word in words:
             node = HuffmanNode(word, fake_freq)
-            fake_freq *= fake_freq
+            fake_freq = fake_freq * 0.95
             nodes.append(node)
         return nodes
-
 
     def build_huffman_tree(self, nodes):
         priorityq = queue.PriorityQueue()
@@ -97,4 +124,6 @@ class Compress:
 
 if __name__ == '__main__':
     c = Compress()
-    print c.symbol_to_bits
+    print c.symbol_to_bits['a']
+    print c.symbol_to_bits['at']
+    print c.symbol_to_bits['product']
