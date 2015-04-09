@@ -47,12 +47,12 @@ class TestCompress(unittest.TestCase):
     def test_encode_text(self):
         enc = self.c.encode('this is')
         binary = int(enc, 2)
-        self.assertEquals(binary, 46581)
+        self.assertEquals(binary, 183)
 
     def test_encode_text_with_punctuation(self):
         enc = self.c.encode('foo? is this bar!')
         binary = int(enc, 2)
-        self.assertEquals(binary, 7599673041047996512881766L)
+        self.assertEquals(binary, 29686222816609210748006L)
 
     def test_encode_decode_1(self):
         s = 'you are really cool!'

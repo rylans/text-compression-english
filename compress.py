@@ -70,7 +70,7 @@ class Compress:
         wordfile = open('words10000.txt', 'r')
         word_list = []
         for line in wordfile.readlines():
-            word_list.append(line.strip())
+            word_list.append(line.strip() + ' ')
         wordfile.close()
         return word_list
 
@@ -113,7 +113,10 @@ class Compress:
 
     def encode_symbol(self, string):
         """Encodes this string if it is in the tree"""
-        return self.symbol_to_bits.get(string)
+        symb = self.symbol_to_bits.get(string)
+        if symb:
+            return symb
+        return self.symbol_to_bits.get(string + ' ')
 
     def decode_symbol(self, bits):
         """Decodes these bits if it is in the tree"""
@@ -124,6 +127,7 @@ class Compress:
         bitstring = ''
 
         for symbol in string.split(' '):
+            symbol = symbol + ' '
             encoding = self.encode_symbol(symbol)
             if encoding == None:
                 for s in symbol:
@@ -134,8 +138,6 @@ class Compress:
                         bitstring += encoding
             else:
                 bitstring += encoding
-
-            bitstring = bitstring + self.encode_symbol(' ')
 
         l = len(self.encode_symbol(' '))
         return bitstring[:-l]
