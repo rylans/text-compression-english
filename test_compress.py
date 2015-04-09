@@ -10,14 +10,6 @@ class TestCompress(unittest.TestCase):
     def setUp(self):
         self.c = Compress()
 
-    def test_encode_returns_bytes(self):
-        enc = self.c.encode('foo')
-        self.assertTrue(isinstance(enc, bytes))
-
-    def test_decode_returns_string(self):
-        dec = self.c.decode(b'123')
-        self.assertTrue(isinstance(dec, str))
-
     def test_encode_word_the(self):
         enc = self.c.encode_symbol('the')
         binary = int(enc, 2)
@@ -33,6 +25,10 @@ class TestCompress(unittest.TestCase):
         binary = int(enc, 2)
         self.assertEquals(binary, 233)
 
+    def test_encode_nonexistent_word(self):
+        enc = self.c.encode_symbol('no-such-word')
+        self.assertEquals(None, enc)
+
     def test_encode_char_space(self):
         enc = self.c.encode_symbol(' ')
         binary = int(enc, 2)
@@ -47,3 +43,31 @@ class TestCompress(unittest.TestCase):
         enc = self.c.encode_symbol('w')
         binary = int(enc, 2)
         self.assertEquals(binary, 48)
+
+    def test_encode_text(self):
+        enc = self.c.encode('this is')
+        binary = int(enc, 2)
+        self.assertEquals(binary, 46581)
+
+    def test_encode_text_with_punctuation(self):
+        enc = self.c.encode('foo? is this bar!')
+        binary = int(enc, 2)
+        self.assertEquals(binary, 7599673041047996512881766L)
+
+    def test_encode_decode_1(self):
+        s = 'you are really cool!'
+        enc = self.c.encode(s)
+        dec = self.c.decode(enc)
+        self.assertEquals(s, dec)
+
+    def test_encode_decode_2(self):
+        s = '? i wonder how . compressed it ! will, be !'
+        enc = self.c.encode(s)
+        dec = self.c.decode(enc)
+        self.assertEquals(s, dec)
+
+    def test_encode_decode_3(self):
+        s = 'xaajj tiko ax auui ahj nn nana nib'
+        enc = self.c.encode(s)
+        dec = self.c.decode(enc)
+        self.assertEquals(s, dec)

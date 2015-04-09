@@ -58,7 +58,9 @@ class Compress:
                 ('b', 1.25), ('v', 0.79),
                 ('k', 0.56), ('x', 0.14),
                 ('j', 0.09), ('q', 0.08),
-                ('z', 0.05)]
+                ('z', 0.05), ('.', 0.04),
+                (',', 0.039), ('?', 0.038),
+                ('!', 0.037)]
         nodes = []
         for char in chars:
             node = HuffmanNode(char[0], char[1])
@@ -112,18 +114,61 @@ class Compress:
 
     def encode_symbol(self, string):
         """Encodes this string if it is in the tree"""
-        return self.symbol_to_bits[string]
+        return self.symbol_to_bits.get(string)
+
+    def decode_symbol(self, bits):
+        """Decodes these bits if it is in the tree"""
+        return self.bits_to_symbol.get(bits)
 
     def encode(self, string):
         """Encodes string to byte representation"""
-        return b'0'
+        bitstring = ''
+
+        for symbol in string.split(' '):
+            encoding = self.encode_symbol(symbol)
+            if encoding == None:
+                for s in symbol:
+                    encoding = self.encode_symbol(s)
+                    if encoding == None:
+                        print "Skipping symbol: " + s
+                    else:
+                        bitstring += encoding
+            else:
+                bitstring += encoding
+
+            bitstring = bitstring + self.encode_symbol(' ')
+
+        l = len(self.encode_symbol(' '))
+        return bitstring[:-l]
 
     def decode(self, byteString):
         """Decodes bytes into a text string"""
-        return ""
+        decoded = ''
+        portion_left = byteString
+        while len(portion_left) > 0:
+            substr_len = 1
+            symbol = None
+            while (symbol == None) and (substr_len <= len(portion_left)):
+                symbol = self.decode_symbol(portion_left[:substr_len])
+                substr_len += 1
+
+            if symbol == None:
+                print "decode failed:"
+                print "decoded: " + decoded
+                print "left: " + portion_left
+                return None
+
+            decoded += symbol
+            #print "decoded: _" + symbol + "_"
+            portion_left = portion_left[substr_len-1:]
+
+        return decoded
 
 if __name__ == '__main__':
     c = Compress()
-    print c.symbol_to_bits['a']
-    print c.symbol_to_bits['at']
-    print c.symbol_to_bits['product']
+    enc = c.encode('this is an example of huffman')
+    print enc
+    dec = c.decode(enc)
+    print dec
+
+
