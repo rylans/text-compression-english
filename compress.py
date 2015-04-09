@@ -4,6 +4,8 @@ compression
 
 import Queue as queue
 
+import random
+
 class HuffmanNode:
     """Node in the Huffman coding tree"""
     def __init__(self, symbol, freq):
@@ -29,9 +31,6 @@ class HuffmanNode:
 class Compress:
     """Compress"""
     def __init__(self):
-        #self.word_tree= None
-        #self.char_tree = None
-
         self.bits_to_symbol = {}
         self.symbol_to_bits = {}
 
@@ -68,7 +67,7 @@ class Compress:
         return nodes
 
     def read_word_list(self):
-        wordfile = open('words256.txt', 'r')
+        wordfile = open('words10000.txt', 'r')
         word_list = []
         for line in wordfile.readlines():
             word_list.append(line.strip())
@@ -164,11 +163,25 @@ class Compress:
 
         return decoded
 
+def take_a_bit():
+    if random.random() < 0.5:
+        return '0'
+    else:
+        return '1'
+
+def take_n_bits(n):
+    bits = ''
+    for i in range(n):
+        bits += take_a_bit()
+    return bits
+
 if __name__ == '__main__':
     c = Compress()
     enc = c.encode('this is an example of huffman')
-    print enc
     dec = c.decode(enc)
     print dec
 
+    print "#######"
 
+    bits1 = take_n_bits(500)
+    print c.decode(bits1)
